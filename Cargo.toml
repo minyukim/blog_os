@@ -32,5 +32,9 @@ features = ["spin_no_std"]
 panic = "abort"
 
 [[test]]
+name = "stack_overflow"
+harness = false
+
+[[test]]
 name = "should_panic"
 harness = false
