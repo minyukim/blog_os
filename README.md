@@ -13,6 +13,16 @@ With about 3 years of experience of firmware development in C, I'm trying to see
 
 - The [conditional compilation (`#[cfg(..)]` and `#[cfg_attr(..)]`)](https://doc.rust-lang.org/reference/conditional-compilation.html) is much easier to use and harder to make mistakes than the C macros.
 
+- There are a lot of ways to implement a memory allocator. The [blog](https://os.phil-opp.com/allocator-designs/) mentions some allocator designs such as
+  - Bump allocator
+  - Arena allocator
+  - Linked list allocator
+  - Fixed-size block allocator
+  - Page allocator
+  - Slab allocator
+  - Buddy allocator
+
+
 ## Differences from the blog
 
 - Use [rust-toolchain.toml](rust-toolchain.toml) to manage toolchain declaratively (https://rust-lang.github.io/rustup/overrides.html#the-toolchain-file).
