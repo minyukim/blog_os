@@ -10,7 +10,10 @@ use core::panic::PanicInfo;
 
 use bootloader::{entry_point, BootInfo};
 
-use blog_os::println;
+use blog_os::{
+    println,
+    task::{simple_executor::SimpleExecutor, Task},
+};
 
 entry_point!(kernel_main);
 
@@ -52,11 +55,36 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
         Rc::strong_count(&cloned_reference)
     );
 
+    // new instance of the SimpleExecutor is created with an empty task_queue
+    let mut executor = SimpleExecutor::new();
+
+    // call the async example_task function, which returns a future
+    // wrap this future in the Task type, which moves it to the heap and pins it
+    // add the task to the task_queue of the executor through the spawn method
+    executor.spawn(Task::new(example_task()));
+
+    // pop the task from the front of the task_queue
+    // create a RawWaker for the task, convert it to a Waker instance,
+    // and then create a Context instance from it
+    // call the poll method on the future of the task, using the Context just created
+    // example_task does not wait for anything, it just directly runs till its end
+    // on the first poll call, prints "async number: 42" and returns Poll:Ready
+    executor.run();
+
     #[cfg(test)]
     test_main();
 
     println!("It did not crash!");
     blog_os::hlt_loop();
+}
+
+async fn async_number() -> u32 {
+    42
+}
+
+async fn example_task() {
+    let number = async_number().await;
+    println!("async number: {}", number);
 }
 
 #[cfg(not(test))]
