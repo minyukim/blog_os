@@ -12,7 +12,7 @@ use bootloader::{entry_point, BootInfo};
 
 use blog_os::{
     println,
-    task::{keyboard, simple_executor::SimpleExecutor, Task},
+    task::{executor::Executor, keyboard, Task},
 };
 
 entry_point!(kernel_main);
@@ -55,8 +55,7 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
         Rc::strong_count(&cloned_reference)
     );
 
-    // new instance of the SimpleExecutor is created with an empty task_queue
-    let mut executor = SimpleExecutor::new();
+    let mut executor = Executor::new();
 
     // call the async example_task function, which returns a future
     // wrap this future in the Task type, which moves it to the heap and pins it
@@ -64,12 +63,6 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     executor.spawn(Task::new(example_task()));
     executor.spawn(Task::new(keyboard::print_keypresses()));
 
-    // pop the task from the front of the task_queue
-    // create a RawWaker for the task, convert it to a Waker instance,
-    // and then create a Context instance from it
-    // call the poll method on the future of the task, using the Context just created
-    // example_task does not wait for anything, it just directly runs till its end
-    // on the first poll call, prints "async number: 42" and returns Poll:Ready
     executor.run();
 
     #[cfg(test)]
