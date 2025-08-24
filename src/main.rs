@@ -12,7 +12,7 @@ use bootloader::{entry_point, BootInfo};
 
 use blog_os::{
     println,
-    task::{simple_executor::SimpleExecutor, Task},
+    task::{keyboard, simple_executor::SimpleExecutor, Task},
 };
 
 entry_point!(kernel_main);
@@ -62,6 +62,7 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     // wrap this future in the Task type, which moves it to the heap and pins it
     // add the task to the task_queue of the executor through the spawn method
     executor.spawn(Task::new(example_task()));
+    executor.spawn(Task::new(keyboard::print_keypresses()));
 
     // pop the task from the front of the task_queue
     // create a RawWaker for the task, convert it to a Waker instance,
